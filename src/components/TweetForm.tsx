@@ -87,7 +87,7 @@ const TweetForm = ({ onSubmit, onImageUpload, isLoading }: TweetFormProps) => {
                 className="bg-brand-pink hover:bg-brand-pink/90 text-white"
                 disabled={isLoading}
               >
-                {isLoading ? "Processing..." : "Generate"} 
+                {isLoading ? "Processing..." : "Get Tweet"} 
                 {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
               </Button>
             </div>

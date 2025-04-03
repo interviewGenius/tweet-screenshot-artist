@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Check, Heart, Repeat, MessageCircle, BarChart2, Share } from "lucide-react";
+import { forwardRef } from "react";
 
 interface TweetPreviewProps {
   avatar?: string;
@@ -16,9 +17,10 @@ interface TweetPreviewProps {
   retweets?: number;
   comments?: number;
   views?: number;
+  style?: React.CSSProperties;
 }
 
-const TweetPreview = ({
+const TweetPreview = forwardRef<HTMLDivElement, TweetPreviewProps>(({
   avatar = "",
   name = "User Name",
   username = "username",
@@ -29,11 +31,20 @@ const TweetPreview = ({
   likes = 42,
   retweets = 9,
   comments = 3,
-  views = 1240
-}: TweetPreviewProps) => {
+  views = 1240,
+  style = {},
+}, ref) => {
   return (
-    <div className="p-8 md:p-10 rounded-xl flex items-center justify-center" style={{ backgroundColor }}>
-      <Card className="w-full max-w-lg p-4 bg-white shadow-lg rounded-xl tweet-preview">
+    <div 
+      id="tweet-preview-container" 
+      className="p-8 md:p-10 rounded-xl flex items-center justify-center transition-all duration-300"
+      style={{ backgroundColor }}
+      ref={ref}
+    >
+      <Card 
+        className="w-full max-w-lg p-4 bg-white shadow-lg rounded-xl tweet-preview transition-all duration-300" 
+        style={style}
+      >
         <div className="flex items-start space-x-3">
           <Avatar className="h-12 w-12 border">
             {avatar ? (
@@ -96,6 +107,8 @@ const TweetPreview = ({
       </Card>
     </div>
   );
-};
+});
+
+TweetPreview.displayName = "TweetPreview";
 
 export default TweetPreview;

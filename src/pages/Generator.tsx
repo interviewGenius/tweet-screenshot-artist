@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import TweetForm from "@/components/TweetForm";
 import TweetPreview from "@/components/TweetPreview";
@@ -14,6 +14,7 @@ const Generator = () => {
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [backgroundColor, setBackgroundColor] = useState("#82d2ff");
+  const [tweetStyle, setTweetStyle] = useState<React.CSSProperties>({});
   const { toast } = useToast();
   const previewRef = useRef<HTMLDivElement>(null);
   
@@ -93,6 +94,10 @@ const Generator = () => {
       });
     }
   };
+
+  const handleTweetStyleChange = (styleUpdate: any) => {
+    setTweetStyle(prev => ({...prev, ...styleUpdate}));
+  };
   
   return (
     <div className="py-12 px-4">
@@ -112,31 +117,36 @@ const Generator = () => {
         
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <div id="tweet-preview-container" ref={previewRef}>
-              {uploadedImageUrl ? (
-                <div className="p-8 md:p-10 rounded-xl flex items-center justify-center" style={{ backgroundColor }}>
-                  <img 
-                    src={uploadedImageUrl} 
-                    alt="Uploaded tweet" 
-                    className="max-w-full rounded-xl shadow-lg"
-                  />
-                </div>
-              ) : (
-                <TweetPreview
-                  avatar={tweetData?.avatar || ""}
-                  name={tweetData?.name || "User Name"}
-                  username={tweetData?.username || "username"}
-                  verified={tweetData?.verified || true}
-                  content={tweetData?.content || "This is a sample tweet. Enter a tweet URL to see the actual content."}
-                  date={tweetData?.date || "10:30 AM · Apr 3, 2025"}
-                  backgroundColor={backgroundColor}
-                  likes={tweetData?.likes || 42}
-                  retweets={tweetData?.retweets || 9}
-                  comments={tweetData?.comments || 3}
-                  views={tweetData?.views || 1240}
+            {uploadedImageUrl ? (
+              <div className="p-8 md:p-10 rounded-xl flex items-center justify-center" 
+                id="tweet-preview-container"
+                style={{ backgroundColor }}
+                ref={previewRef}
+              >
+                <img 
+                  src={uploadedImageUrl} 
+                  alt="Uploaded tweet" 
+                  className="max-w-full rounded-xl shadow-lg tweet-preview"
+                  style={tweetStyle}
                 />
-              )}
-            </div>
+              </div>
+            ) : (
+              <TweetPreview
+                ref={previewRef}
+                avatar={tweetData?.avatar || ""}
+                name={tweetData?.name || "User Name"}
+                username={tweetData?.username || "username"}
+                verified={tweetData?.verified || true}
+                content={tweetData?.content || "This is a sample tweet. Enter a tweet URL to see the actual content."}
+                date={tweetData?.date || "10:30 AM · Apr 3, 2025"}
+                backgroundColor={backgroundColor}
+                likes={tweetData?.likes || 42}
+                retweets={tweetData?.retweets || 9}
+                comments={tweetData?.comments || 3}
+                views={tweetData?.views || 1240}
+                style={tweetStyle}
+              />
+            )}
           </div>
           
           <div>
@@ -145,6 +155,7 @@ const Generator = () => {
               onScreenshot={handleScreenshot}
               canScreenshot={!!tweetData || !!uploadedImageUrl}
               elementId="tweet-preview-container"
+              onTweetStyleChange={handleTweetStyleChange}
             />
           </div>
         </div>
