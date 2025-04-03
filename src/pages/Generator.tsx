@@ -12,12 +12,14 @@ const Generator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tweetData, setTweetData] = useState<any | null>(null);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [backgroundColor, setBackgroundColor] = useState("#82d2ff");
   const { toast } = useToast();
   const previewRef = useRef<HTMLDivElement>(null);
   
   const handleSubmit = async (url: string) => {
     setIsLoading(true);
+    setUploadedImageUrl(null);
     
     try {
       // Use the new screenshot service
@@ -51,6 +53,23 @@ const Generator = () => {
       setIsLoading(false);
     }
   };
+
+  const handleImageUpload = (file: File) => {
+    setIsLoading(true);
+    setTweetData(null);
+    setScreenshotUrl(null);
+    
+    // Create a local URL for the uploaded image
+    const imageUrl = URL.createObjectURL(file);
+    setUploadedImageUrl(imageUrl);
+    
+    toast({
+      title: "Image uploaded successfully",
+      description: "Your tweet image has been loaded and is ready for customization.",
+    });
+    
+    setIsLoading(false);
+  };
   
   const handleScreenshot = async () => {
     if (!previewRef.current) return;
@@ -81,28 +100,42 @@ const Generator = () => {
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-4 text-gray-800">Generate Your Tweet Screenshot</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Enter a tweet URL below to create a beautiful screenshot that you can download and share.
+            Enter a tweet URL or upload an image below to create a beautiful screenshot that you can download and share.
           </p>
         </div>
         
-        <TweetForm onSubmit={handleSubmit} isLoading={isLoading} />
+        <TweetForm 
+          onSubmit={handleSubmit} 
+          onImageUpload={handleImageUpload}
+          isLoading={isLoading} 
+        />
         
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div id="tweet-preview-container" ref={previewRef}>
-              <TweetPreview
-                avatar={tweetData?.avatar || ""}
-                name={tweetData?.name || "User Name"}
-                username={tweetData?.username || "username"}
-                verified={tweetData?.verified || true}
-                content={tweetData?.content || "This is a sample tweet. Enter a tweet URL to see the actual content."}
-                date={tweetData?.date || "10:30 AM · Apr 3, 2025"}
-                backgroundColor={backgroundColor}
-                likes={tweetData?.likes || 42}
-                retweets={tweetData?.retweets || 9}
-                comments={tweetData?.comments || 3}
-                views={tweetData?.views || 1240}
-              />
+              {uploadedImageUrl ? (
+                <div className="p-8 md:p-10 rounded-xl flex items-center justify-center" style={{ backgroundColor }}>
+                  <img 
+                    src={uploadedImageUrl} 
+                    alt="Uploaded tweet" 
+                    className="max-w-full rounded-xl shadow-lg"
+                  />
+                </div>
+              ) : (
+                <TweetPreview
+                  avatar={tweetData?.avatar || ""}
+                  name={tweetData?.name || "User Name"}
+                  username={tweetData?.username || "username"}
+                  verified={tweetData?.verified || true}
+                  content={tweetData?.content || "This is a sample tweet. Enter a tweet URL to see the actual content."}
+                  date={tweetData?.date || "10:30 AM · Apr 3, 2025"}
+                  backgroundColor={backgroundColor}
+                  likes={tweetData?.likes || 42}
+                  retweets={tweetData?.retweets || 9}
+                  comments={tweetData?.comments || 3}
+                  views={tweetData?.views || 1240}
+                />
+              )}
             </div>
           </div>
           
@@ -110,7 +143,7 @@ const Generator = () => {
             <ScreenshotControls
               onBackgroundChange={setBackgroundColor}
               onScreenshot={handleScreenshot}
-              canScreenshot={!!tweetData}
+              canScreenshot={!!tweetData || !!uploadedImageUrl}
               elementId="tweet-preview-container"
             />
           </div>

@@ -1,16 +1,18 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Upload } from "lucide-react";
 
 interface TweetFormProps {
   onSubmit: (url: string) => void;
+  onImageUpload: (file: File) => void;
   isLoading: boolean;
 }
 
-const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
+const TweetForm = ({ onSubmit, onImageUpload, isLoading }: TweetFormProps) => {
   const [tweetUrl, setTweetUrl] = useState("");
   const { toast } = useToast();
 
@@ -39,11 +41,35 @@ const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
     onSubmit(tweetUrl);
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      toast({
+        title: "No file selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if file is an image
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onImageUpload(file);
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto">
       <Tabs defaultValue="url" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="url">Tweet URL</TabsTrigger>
+          <TabsTrigger value="upload">Upload Image</TabsTrigger>
           <TabsTrigger value="text">Sample Tweet</TabsTrigger>
         </TabsList>
         
@@ -69,6 +95,31 @@ const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
               Enter a link to any tweet to create a beautiful screenshot
             </p>
           </form>
+        </TabsContent>
+        
+        <TabsContent value="upload">
+          <div className="space-y-4">
+            <div className="flex flex-col gap-4">
+              <label htmlFor="tweet-image" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-8 h-8 mb-2 text-gray-500" />
+                  <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                  <p className="text-xs text-gray-500">PNG, JPG or GIF</p>
+                </div>
+                <Input 
+                  id="tweet-image" 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleImageUpload}
+                  disabled={isLoading}
+                />
+              </label>
+            </div>
+            <p className="text-sm text-muted-foreground text-center">
+              Upload an image of a tweet from your local machine
+            </p>
+          </div>
         </TabsContent>
         
         <TabsContent value="text">
