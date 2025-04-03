@@ -1,10 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-
 const Hero = () => {
-  return (
-    <section className="pt-16 pb-8 px-4">
+  return <section className="pt-16 pb-8 px-4">
       <div className="max-w-6xl mx-auto text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
           Tweet Screenshot Generator
@@ -22,16 +19,8 @@ const Hero = () => {
           </Button>
         </div>
         
-        <div className="p-6 bg-gray-100 rounded-xl mb-8">
-          <img
-            src="/lovable-uploads/fd8129ab-3771-4c1c-b2bf-0b723a707dab.png"
-            alt="Tweet Screenshot Example"
-            className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
-          />
-        </div>
+        
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default Hero;
