@@ -1,7 +1,5 @@
 
-import { useToast } from "@/components/ui/use-toast";
-
-// Mock sample tweet data
+// Improved tweet service
 const sampleTweet = {
   avatar: "",
   name: "John Doe",
@@ -9,13 +7,14 @@ const sampleTweet = {
   verified: true,
   content: "Just tried this amazing Tweet Screenshot Generator! It's a game-changer for creating professional social media content. Check it out!",
   date: "10:30 AM · Apr 3, 2025",
+  likes: 42,
+  retweets: 9,
+  comments: 3,
+  views: 1240
 };
 
-// Mock function to fetch tweet data from a URL
+// Better function to fetch tweet data from a URL
 export const fetchTweetData = async (tweetUrl: string) => {
-  // In a real implementation, this would call an API to fetch the actual tweet data
-  // For this demo, we're returning either sample data or mocked data based on input
-  
   try {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -24,7 +23,7 @@ export const fetchTweetData = async (tweetUrl: string) => {
       return { ...sampleTweet, success: true };
     }
     
-    // Extract tweet ID from URL (this is a simplified version)
+    // Extract tweet ID from URL (improved version)
     const tweetId = extractTweetId(tweetUrl);
     
     if (!tweetId) {
@@ -34,15 +33,19 @@ export const fetchTweetData = async (tweetUrl: string) => {
       };
     }
     
-    // This would normally call a backend API
-    // For now, return mock data based on the tweet ID
+    // In a real implementation, this would call a backend API to fetch the tweet
+    // For this demo, we're returning mock data based on the tweet ID
     return {
       avatar: "",
       name: "Twitter User",
       username: "user" + tweetId.substring(0, 4),
       verified: Math.random() > 0.5,
-      content: `This is a tweet with ID ${tweetId}. In a real implementation, this would show the actual tweet content.`,
+      content: `This is tweet #${tweetId}. In a real implementation, this would show the actual tweet content pulled from the Twitter API.`,
       date: "10:30 AM · Apr 3, 2025",
+      likes: Math.floor(Math.random() * 1000),
+      retweets: Math.floor(Math.random() * 100),
+      comments: Math.floor(Math.random() * 50),
+      views: Math.floor(Math.random() * 10000),
       success: true
     };
   } catch (error) {
@@ -54,36 +57,23 @@ export const fetchTweetData = async (tweetUrl: string) => {
   }
 };
 
-// Helper function to extract tweet ID from URL
+// Improved function to extract tweet ID from URL
 const extractTweetId = (url: string): string | null => {
-  // Very simple regex to extract tweet ID from Twitter URLs
-  // Real implementation would need to be more robust
-  const match = url.match(/twitter\.com\/\w+\/status\/(\d+)/);
-  if (match && match[1]) {
-    return match[1];
+  // Support for both twitter.com and x.com URLs with better regex
+  const twitterRegex = /(?:twitter\.com|x\.com)\/(?:#!\/)?(\w+)\/status(?:es)?\/(\d+)/i;
+  const match = url.match(twitterRegex);
+  
+  if (match && match[2]) {
+    return match[2];
   }
   
-  // Also try X.com URLs
-  const xMatch = url.match(/x\.com\/\w+\/status\/(\d+)/);
-  if (xMatch && xMatch[1]) {
-    return xMatch[1];
+  // If it doesn't match the standard format, attempt to be more lenient
+  const numbersOnly = /(\d{10,20})/;
+  const numMatch = url.match(numbersOnly);
+  
+  if (numMatch && numMatch[1]) {
+    return numMatch[1];
   }
   
   return null;
-};
-
-// Function to generate and download a screenshot
-export const generateScreenshot = (elementId: string, filename: string = "tweet-screenshot.png") => {
-  // In a real implementation, this would use html2canvas or a similar library
-  // For this demo, we'll just log to console
-  console.log(`Generating screenshot of element with ID: ${elementId}`);
-  
-  // Mock functionality - in reality would trigger download
-  const toast = useToast();
-  toast.toast({
-    title: "Screenshot Generated",
-    description: "Your screenshot has been created and is ready to download.",
-  });
-  
-  return true;
 };

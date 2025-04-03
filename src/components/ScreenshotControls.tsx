@@ -7,17 +7,20 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { Download, Share, Camera } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { copyScreenshotToClipboard } from "@/utils/screenshotUtils";
 
 interface ScreenshotControlsProps {
   onBackgroundChange: (color: string) => void;
   onScreenshot: () => void;
   canScreenshot: boolean;
+  elementId: string;
 }
 
 const ScreenshotControls = ({
   onBackgroundChange,
   onScreenshot,
-  canScreenshot
+  canScreenshot,
+  elementId
 }: ScreenshotControlsProps) => {
   const [paddingSize, setPaddingSize] = useState(10);
   const { toast } = useToast();
@@ -32,10 +35,33 @@ const ScreenshotControls = ({
   const handleCopyToClipboard = async () => {
     if (!canScreenshot) return;
     
-    toast({
-      title: "Screenshot copied",
-      description: "The screenshot has been copied to your clipboard."
-    });
+    try {
+      const success = await copyScreenshotToClipboard(elementId);
+      
+      if (success) {
+        toast({
+          title: "Screenshot copied",
+          description: "The screenshot has been copied to your clipboard."
+        });
+      } else {
+        throw new Error("Failed to copy screenshot to clipboard");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to copy screenshot to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Update padding when the slider changes
+  const handlePaddingChange = (value: number[]) => {
+    setPaddingSize(value[0]);
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.style.padding = `${value[0]}px`;
+    }
   };
 
   return (
@@ -81,7 +107,7 @@ const ScreenshotControls = ({
               min={0}
               max={50}
               step={1}
-              onValueChange={(value) => setPaddingSize(value[0])}
+              onValueChange={handlePaddingChange}
             />
           </div>
 

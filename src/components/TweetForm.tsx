@@ -26,15 +26,6 @@ const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
       return;
     }
 
-    // Check if it's a valid Twitter/X URL
-    if (!tweetUrl.includes("twitter.com") && !tweetUrl.includes("x.com")) {
-      toast({
-        title: "Please enter a valid Twitter/X URL",
-        variant: "destructive",
-      });
-      return;
-    }
-
     onSubmit(tweetUrl);
   };
 

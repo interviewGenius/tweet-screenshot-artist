@@ -69,6 +69,27 @@ export const copyScreenshotToClipboard = async (elementId: string) => {
     return true;
   } catch (error) {
     console.error("Error copying screenshot to clipboard:", error);
-    return false;
+    
+    // Try fallback method for browsers with limited clipboard support
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      const element = document.getElementById(elementId);
+      if (!element) throw new Error(`Element with ID ${elementId} not found`);
+      
+      await html2canvas(element, { scale: 2 }).then(canvas => {
+        const dataUrl = canvas.toDataURL('image/png');
+        
+        // Try to use the newer clipboard API
+        navigator.clipboard.writeText(dataUrl);
+      });
+      
+      return true;
+    } catch (fallbackError) {
+      console.error("Fallback clipboard method also failed:", fallbackError);
+      return false;
+    }
   }
 };

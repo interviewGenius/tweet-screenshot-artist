@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import TweetForm from "@/components/TweetForm";
 import TweetPreview from "@/components/TweetPreview";
@@ -22,6 +22,10 @@ const Generator = () => {
       
       if (data.success) {
         setTweetData(data);
+        toast({
+          title: "Tweet loaded successfully",
+          description: "Your tweet has been loaded and is ready for customization.",
+        });
       } else {
         toast({
           title: "Error",
@@ -67,7 +71,7 @@ const Generator = () => {
     <div className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-4">Generate Your Tweet Screenshot</h2>
+          <h2 className="text-3xl font-bold mb-4 text-gray-800">Generate Your Tweet Screenshot</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Enter a tweet URL below to create a beautiful screenshot that you can download and share.
           </p>
@@ -86,6 +90,10 @@ const Generator = () => {
                 content={tweetData?.content || "This is a sample tweet. Enter a tweet URL to see the actual content."}
                 date={tweetData?.date || "10:30 AM · Apr 3, 2025"}
                 backgroundColor={backgroundColor}
+                likes={tweetData?.likes || 42}
+                retweets={tweetData?.retweets || 9}
+                comments={tweetData?.comments || 3}
+                views={tweetData?.views || 1240}
               />
             </div>
           </div>
@@ -95,6 +103,7 @@ const Generator = () => {
               onBackgroundChange={setBackgroundColor}
               onScreenshot={handleScreenshot}
               canScreenshot={!!tweetData}
+              elementId="tweet-preview-container"
             />
           </div>
         </div>
