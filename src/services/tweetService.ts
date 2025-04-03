@@ -23,24 +23,35 @@ export const fetchTweetData = async (tweetUrl: string) => {
       return { ...sampleTweet, success: true };
     }
     
+    // Validate URL first
+    if (!tweetUrl.startsWith("https://twitter.com/") && !tweetUrl.startsWith("https://x.com/")) {
+      return { 
+        success: false, 
+        error: "Invalid URL. Please enter a valid Twitter or X.com URL" 
+      };
+    }
+    
     // Extract tweet ID from URL (improved version)
     const tweetId = extractTweetId(tweetUrl);
     
     if (!tweetId) {
       return { 
         success: false, 
-        error: "Could not extract tweet ID from URL" 
+        error: "Could not extract tweet ID from URL. Make sure it's a valid tweet link" 
       };
     }
     
-    // In a real implementation, this would call a backend API to fetch the tweet
+    // In a production implementation, this would call a backend API using Puppeteer
+    // to capture the actual tweet and extract its data
     // For this demo, we're returning mock data based on the tweet ID
+    const username = extractUsername(tweetUrl);
+    
     return {
       avatar: "",
-      name: "Twitter User",
-      username: "user" + tweetId.substring(0, 4),
+      name: username ? capitalizeFirstLetter(username) : "Twitter User",
+      username: username || "user" + tweetId.substring(0, 4),
       verified: Math.random() > 0.5,
-      content: `This is tweet #${tweetId}. In a real implementation, this would show the actual tweet content pulled from the Twitter API.`,
+      content: `This is tweet #${tweetId}. In a production implementation, this would show the actual tweet content captured using Puppeteer.`,
       date: "10:30 AM · Apr 3, 2025",
       likes: Math.floor(Math.random() * 1000),
       retweets: Math.floor(Math.random() * 100),
@@ -76,4 +87,21 @@ const extractTweetId = (url: string): string | null => {
   }
   
   return null;
+};
+
+// Extract username from URL
+const extractUsername = (url: string): string | null => {
+  const usernameRegex = /(?:twitter\.com|x\.com)\/(?:#!\/)?(\w+)/i;
+  const match = url.match(usernameRegex);
+  
+  if (match && match[1] && match[1] !== 'status' && match[1] !== 'statuses') {
+    return match[1];
+  }
+  
+  return null;
+};
+
+// Helper function to capitalize the first letter of a string
+const capitalizeFirstLetter = (string: string): string => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 };

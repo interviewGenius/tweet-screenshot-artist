@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +25,17 @@ const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
       return;
     }
 
+    if (tweetUrl !== "sample" && 
+        !tweetUrl.startsWith("https://twitter.com/") && 
+        !tweetUrl.startsWith("https://x.com/")) {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid Twitter or X.com URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
     onSubmit(tweetUrl);
   };
 
@@ -41,7 +51,7 @@ const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex flex-col md:flex-row gap-2">
               <Input
-                placeholder="Paste Twitter/X URL here..."
+                placeholder="Paste Twitter/X URL here... (https://twitter.com/... or https://x.com/...)"
                 value={tweetUrl}
                 onChange={(e) => setTweetUrl(e.target.value)}
                 className="flex-1"
@@ -51,7 +61,7 @@ const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
                 className="bg-brand-pink hover:bg-brand-pink/90 text-white"
                 disabled={isLoading}
               >
-                {isLoading ? "Loading..." : "Generate"} 
+                {isLoading ? "Processing..." : "Generate"} 
                 {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
               </Button>
             </div>
@@ -69,7 +79,7 @@ const TweetForm = ({ onSubmit, isLoading }: TweetFormProps) => {
                 className="bg-brand-pink hover:bg-brand-pink/90 text-white w-full md:w-auto"
                 disabled={isLoading}
               >
-                {isLoading ? "Loading..." : "Use Sample Tweet"} 
+                {isLoading ? "Processing..." : "Use Sample Tweet"} 
                 {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
               </Button>
             </div>

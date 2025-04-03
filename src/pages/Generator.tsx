@@ -5,11 +5,13 @@ import TweetForm from "@/components/TweetForm";
 import TweetPreview from "@/components/TweetPreview";
 import ScreenshotControls from "@/components/ScreenshotControls";
 import { fetchTweetData } from "@/services/tweetService";
+import { generateTweetScreenshot } from "@/services/screenshotService";
 import { downloadScreenshot } from "@/utils/screenshotUtils";
 
 const Generator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tweetData, setTweetData] = useState<any | null>(null);
+  const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [backgroundColor, setBackgroundColor] = useState("#82d2ff");
   const { toast } = useToast();
   const previewRef = useRef<HTMLDivElement>(null);
@@ -18,10 +20,16 @@ const Generator = () => {
     setIsLoading(true);
     
     try {
-      const data = await fetchTweetData(url);
+      // Use the new screenshot service
+      const result = await generateTweetScreenshot(url);
       
-      if (data.success) {
-        setTweetData(data);
+      if (result.success && result.tweetData) {
+        setTweetData(result.tweetData);
+        
+        if (result.imageUrl) {
+          setScreenshotUrl(result.imageUrl);
+        }
+        
         toast({
           title: "Tweet loaded successfully",
           description: "Your tweet has been loaded and is ready for customization.",
@@ -29,7 +37,7 @@ const Generator = () => {
       } else {
         toast({
           title: "Error",
-          description: data.error || "Failed to fetch tweet data",
+          description: result.error || "Failed to fetch tweet data",
           variant: "destructive",
         });
       }

@@ -1,5 +1,7 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+
 const Hero = () => {
   return <section className="pt-16 pb-8 px-4">
       <div className="max-w-6xl mx-auto text-center">
@@ -18,9 +20,11 @@ const Hero = () => {
             View Examples
           </Button>
         </div>
-        
-        
+        <p className="text-gray-500 text-sm max-w-2xl mx-auto">
+          Powered by advanced screenshot technology - paste any Twitter or X.com URL and instantly get a beautiful, customizable screenshot.
+        </p>
       </div>
     </section>;
 };
+
 export default Hero;
